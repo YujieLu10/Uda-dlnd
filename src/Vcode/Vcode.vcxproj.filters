@@ -151,31 +151,23 @@
     <CustomBuild Include="View\GuideView.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="ViewModel\Commands\DeletePictureCommand.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_AboutView.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_DonateView.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_GuideView.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="GeneratedFiles\ui_MainView.h">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VClogo.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ViewModel\Commands\DeletePictureCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_Vcode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_Donate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_DonateView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_MainView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_AboutView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_GuideView.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

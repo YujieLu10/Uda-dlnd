@@ -151,7 +151,7 @@ void Model::processPicture(int grayType, int removet, int binaryt, int denoiser)
 		if (denoisem.empty()) {
 			throw QException("Í¼Æ¬È¥ÔëÉùÊ§°Ü!");
 		}
-		cv::imwrite("processedPicture/denoise.jpg", denoisem);
+		cv::imwrite("denoise.jpg", denoisem);
 		//end denoise
 		string s = "process";
 		this->notify(s);
@@ -191,7 +191,7 @@ void Model::solvePicture() {
 		}
 
 		// Open input image with leptonica library
-		Pix *image = pixRead("processedPicture/denoise.jpg");
+		Pix *image = pixRead("denoise.jpg");
 		if (image == nullptr) {
 			throw QException("È¥ÔëÉùÍ¼Æ¬¶ªÊ§!");
 		}
