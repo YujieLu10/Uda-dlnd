@@ -85,7 +85,6 @@ public:
     QMenuBar *menuBar;
     QMenu *file;
     QMenu *help;
-    QMenu *menu;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -287,8 +286,6 @@ public:
         file->setToolTipsVisible(false);
         help = new QMenu(menuBar);
         help->setObjectName(QStringLiteral("help"));
-        menu = new QMenu(menuBar);
-        menu->setObjectName(QStringLiteral("menu"));
         ViewClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(ViewClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -299,7 +296,6 @@ public:
 
         menuBar->addAction(file->menuAction());
         menuBar->addAction(help->menuAction());
-        menuBar->addAction(menu->menuAction());
         file->addAction(importPicAction);
         file->addAction(saveAction);
         file->addSeparator();
@@ -308,8 +304,6 @@ public:
         help->addAction(guideAction);
         help->addSeparator();
         help->addAction(aboutAction);
-        menu->addAction(action);
-        menu->addAction(action_2);
 
         retranslateUi(ViewClass);
 
@@ -350,7 +344,6 @@ public:
         importSliderButton->setText(QApplication::translate("ViewClass", "\345\257\274\345\205\245\346\273\221\345\235\227\345\233\276\347\211\207", 0));
         file->setTitle(QApplication::translate("ViewClass", "\346\226\207\344\273\266", 0));
         help->setTitle(QApplication::translate("ViewClass", "\345\270\256\345\212\251", 0));
-        menu->setTitle(QApplication::translate("ViewClass", "\351\252\214\350\257\201\347\240\201\347\261\273\345\236\213", 0));
     } // retranslateUi
 
 };

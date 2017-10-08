@@ -625,16 +625,8 @@
     <addaction name="separator"/>
     <addaction name="aboutAction"/>
    </widget>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>验证码类型</string>
-    </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
-   </widget>
    <addaction name="file"/>
    <addaction name="help"/>
-   <addaction name="menu"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

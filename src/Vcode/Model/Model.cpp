@@ -212,16 +212,23 @@ void Model::solvePicture(int verifyType) {
 		}
 	} else if (verifyType == VerifyType::SLIDER) {
 		try {
+			
 			if (originPicturePath.empty() || slidePicturePath.empty()) {
 				throw QException("ÇëÏÈ´ò¿ªÍ¼Æ¬£¡");
 			}
-			PyObject *pModule, *pFunc, *pValue;
-			Py_Initialize();
-			pModule = PyImport_ImportModule("numpytest1");
+			Py_SetPythonHome("Python27");
+			PyObject *pModule, *pFunc, *pValue;			
+			Py_Initialize();			
+			pModule = PyImport_ImportModule("numpytest1");			
+			if (pModule == NULL) {
+				throw QException("pModule is NULL");
+			}			
 			pValue = PyObject_CallMethod(pModule, "predict", "ss", originPicturePath.c_str(), slidePicturePath.c_str());
-			//qDebug() << PyLong_AsLong(pValue);
-			ostringstream os;
-			os << PyLong_AsLong(pValue);
+			if (pValue == NULL) {
+				throw QException("pValue is NULL");
+			}						
+			ostringstream os;			
+			os << PyLong_AsLong(pValue);			
 			res = os.str();
 			Py_Finalize();
 			string s = "result";
@@ -229,6 +236,10 @@ void Model::solvePicture(int verifyType) {
 		}
 		catch (QException& E) {
 			e = E;
+			this->notify(false);
+		}
+		catch (...) {
+			e = QException("unknown error!");
 			this->notify(false);
 		}
 	}
