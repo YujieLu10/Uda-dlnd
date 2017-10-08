@@ -2,6 +2,7 @@
 #include<Common/Common.h>
 #include<Model/model.h>
 #include<ViewModel/Commands/LoadPictureCommand.h>
+#include<ViewModel/Commands/LoadSliderCommand.h>
 #include<ViewModel/Commands/ProcessPictureCommand.h>
 #include<ViewModel/Commands/SolvePictureCommand.h>
 #include<ViewModel/Commands/SaveFileCommand.h>
@@ -12,6 +13,7 @@
 class ViewModel :public Observable, public Observer {
 private:
 	shared_ptr<QImage> pImg;
+	shared_ptr<QImage> pSliderImg;
 	shared_ptr<QImage> pGrayImg;
 	shared_ptr<QImage> pRemoveBGImg;
 	shared_ptr<QImage> pDenoiseImg;
@@ -20,6 +22,7 @@ private:
 	QString* errorMessage;
 
 	shared_ptr<BaseCommand> loadPictureCommand;
+	shared_ptr<BaseCommand> loadSliderCommand;
 	shared_ptr<BaseCommand> processPictureCommand;
 	shared_ptr<BaseCommand> solvePictureCommand;
 	shared_ptr<BaseCommand> saveFileCommand;
@@ -30,6 +33,9 @@ public:
 
 	shared_ptr<BaseCommand> getLoadPictureCommand() {
 		return loadPictureCommand;
+	}
+	shared_ptr<BaseCommand> getLoadSliderCommand() {
+		return loadSliderCommand;
 	}
 	shared_ptr<BaseCommand> getProcessPictureCommand() {
 		return processPictureCommand;
@@ -45,12 +51,14 @@ public:
 	}
 	ViewModel() {
 		loadPictureCommand = static_pointer_cast<BaseCommand, LoadPictureCommand>(shared_ptr<LoadPictureCommand>(new LoadPictureCommand(this)));
+		loadSliderCommand = static_pointer_cast<BaseCommand, LoadSliderCommand>(shared_ptr<LoadSliderCommand>(new LoadSliderCommand(this)));
 		processPictureCommand = static_pointer_cast<BaseCommand, ProcessPictureCommand>(shared_ptr<ProcessPictureCommand>(new ProcessPictureCommand(this)));
 		solvePictureCommand = static_pointer_cast<BaseCommand, SolvePictureCommand>(shared_ptr<SolvePictureCommand>(new SolvePictureCommand(this)));
 		saveFileCommand = static_pointer_cast<BaseCommand, SaveFileCommand>(shared_ptr<SaveFileCommand>(new SaveFileCommand(this)));
 		deletePictureCommand=static_pointer_cast<BaseCommand, DeletePictureCommand>(shared_ptr<DeletePictureCommand>(new DeletePictureCommand(this)));
 
 		pImg = shared_ptr<QImage>(new QImage());
+		pSliderImg = shared_ptr<QImage>(new QImage());
 		pGrayImg = shared_ptr<QImage>(new QImage());
 		pRemoveBGImg = shared_ptr<QImage>(new QImage());
 		pDenoiseImg = shared_ptr<QImage>(new QImage());
@@ -67,11 +75,14 @@ public:
 	void loadPicture(const string& path) {
 		model->loadPicture(path);
 	}
+	void loadSlider(const string& path) {
+		model->loadSlider(path);
+	}
 	void processPicture(int grayType, int removet, int binaryt, int denoiser) {
 		model->processPicture(grayType, removet, binaryt, denoiser);
 	}
-	void solvePicture() {
-		model->solvePicture();
+	void solvePicture(int verifyType) {
+		model->solvePicture(verifyType);
 	}
 	void saveFile(string savePath) {
 		model->saveResult(savePath);
@@ -81,6 +92,9 @@ public:
 	}
 	shared_ptr<QImage> getpImg() {
 		return pImg;
+	}
+	shared_ptr<QImage> getpSliderImg() {
+		return pSliderImg;
 	}
 	shared_ptr<QImage> getpGrayImg() {
 		return pGrayImg;
@@ -168,6 +182,15 @@ public:
 			}
 			else {
 				string s = "result";
+				notify(s);
+			}
+		} else if (attribute == "slideImage") {
+			*pSliderImg = cvMatToQImage(model->getSliderMat());
+			if (pSliderImg->isNull()) {
+				*errorMessage = codec->toUnicode("转换Mat类型到QImage类型失败！");
+				notify(false);
+			} else {
+				string s = "slideImage";
 				notify(s);
 			}
 		}

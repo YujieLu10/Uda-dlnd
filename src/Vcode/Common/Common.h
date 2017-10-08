@@ -67,6 +67,12 @@ namespace GrayType {
 	};
 }
 
+namespace VerifyType {
+	enum type {
+		TEXT,SLIDER
+	};
+}
+
 //namespace RemoveBG {
 //	enum {
 //		THRESHOLD=100
@@ -87,7 +93,17 @@ namespace GrayType {
 //	};
 //}
 
-
+class SolveParam :public Param {
+private:
+	int verifyType;
+public:
+	void setVerifyType(int t) {
+		verifyType = t;
+	}
+	int getVerifyType() {
+		return verifyType;
+	}
+};
 class ProcessParam :public Param {
 private:
 	int GrayType;

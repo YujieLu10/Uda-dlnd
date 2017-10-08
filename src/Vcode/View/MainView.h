@@ -17,7 +17,9 @@ public:
 	void setLoadPictureCommand(shared_ptr<BaseCommand> p) {
 		loadPictureCommand = p;
 	}
-
+	void setLoadSliderCommand(shared_ptr<BaseCommand> p) {
+		loadSliderCommand = p;
+	}
 	void setProcessPictureCommand(shared_ptr<BaseCommand> p) {
 		processPictureCommand = p;
 	}
@@ -51,7 +53,9 @@ public:
 	void setBinaryImg(shared_ptr<QImage> p) {
 		pBinaryImg = p;
 	}
-
+	void setSliderImg(shared_ptr<QImage> p) {
+		pSliderImg = p;
+	}
 	void setRes(QString* s) {
 		res = s;
 	}
@@ -65,7 +69,9 @@ private:
 	Ui::ViewClass ui;
 	QString filename;
 	int grayType;
+	int verifyType;
 	QGraphicsScene* originScene;
+	QGraphicsScene* sliderScene;
 	QGraphicsScene* grayScene;
 	QGraphicsScene* denoiseScene;
 	QGraphicsScene* removeBGScene;
@@ -79,6 +85,7 @@ private:
 
 	QString* errorMessage;
 	shared_ptr<BaseCommand> loadPictureCommand;
+	shared_ptr<BaseCommand> loadSliderCommand;
 	shared_ptr<BaseCommand> processPictureCommand;
 	shared_ptr<BaseCommand> solvePictureCommand;
 	shared_ptr<BaseCommand> saveFileCommand;
@@ -89,6 +96,7 @@ private:
 	shared_ptr<QImage> pDenoiseImg;
 	shared_ptr<QImage> pRemoveBGImg;
 	shared_ptr<QImage> pBinaryImg;
+	shared_ptr<QImage> pSliderImg;
 
 	void update(const string& atrribute);
 
@@ -99,6 +107,8 @@ private slots:
 	void processPicture();
 
 	void importPicture();
+
+	void importSlider();
 
 	void solvePicture();
 

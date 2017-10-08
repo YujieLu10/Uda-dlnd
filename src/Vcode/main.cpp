@@ -30,12 +30,14 @@ int main(int argc, char *argv[]) {
 
 	//bind command
 	pv->setLoadPictureCommand(pvm->getLoadPictureCommand());
+	pv->setLoadSliderCommand(pvm->getLoadSliderCommand());
 	pv->setProcessPictureCommand(pvm->getProcessPictureCommand());
 	pv->setSolvePictureCommand(pvm->getSolvePictureCommand());
 	pv->setSaveFileCommand(pvm->getSaveFileCommand());
 	pv->setDeletePictureCommand(pvm->getDeletePictureCommand());
 	//bind data
 	pv->setImg(pvm->getpImg());
+	pv->setSliderImg(pvm->getpSliderImg());
 	pv->setGrayImg(pvm->getpGrayImg());
 	pv->setDenoiseImg(pvm->getpDenoiseImg());
 	pv->setBinaryImg(pvm->getpBinaryImg());

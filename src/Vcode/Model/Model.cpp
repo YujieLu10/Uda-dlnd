@@ -2,6 +2,7 @@
 #include <leptonica/allheaders.h>
 #include <locale>
 #include<Model/Model.h>
+#include<Python.h>
 #include<qdebug.h>
 #include<cstdio>
 #pragma comment(lib,"libtesseract304d.lib")
@@ -174,43 +175,66 @@ wstring Model::UTF8ToUnicode(const string& str) {
 	delete pUnicode;
 	return rt;
 }
-void Model::solvePicture() {
+void Model::solvePicture(int verifyType) {
+	if (verifyType == VerifyType::TEXT) {
+		try {
+			if (m.empty()) {
+				throw QException("ÇëÏÈ´ò¿ªÒ»ÕÅÍ¼Æ¬£¡");
+			}
+			if (denoisem.empty()) {
+				throw QException("ÇëÏÈ½«Í¼Æ¬È¥ÔëÉù!");
+			}
+			tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
+			// Initialize tesseract-ocr with English, without specifying tessdata path
+			if (api->Init(NULL, "eng+chi_sim+normal")) {
+				throw QException("³õÊ¼»¯tesseractÊ§°Ü!");
+				exit(1);
+			}
 
-	try {
-		if (m.empty()) {
-			throw QException("ÇëÏÈ´ò¿ªÒ»ÕÅÍ¼Æ¬£¡");
-		}
-		if (denoisem.empty()) {
-			throw QException("ÇëÏÈ½«Í¼Æ¬È¥ÔëÉù!");
-		}
-		tesseract::TessBaseAPI *api = new tesseract::TessBaseAPI();
-		// Initialize tesseract-ocr with English, without specifying tessdata path
-		if (api->Init(NULL, "eng+chi_sim+normal")) {
-			throw QException("³õÊ¼»¯tesseractÊ§°Ü!");
-			exit(1);
-		}
+			// Open input image with leptonica library
+			Pix *image = pixRead("denoise.jpg");
+			if (image == nullptr) {
+				throw QException("È¥ÔëÉùÍ¼Æ¬¶ªÊ§!");
+			}
+			api->SetImage(image);
+			// Get OCR result
 
-		// Open input image with leptonica library
-		Pix *image = pixRead("denoise.jpg");
-		if (image == nullptr) {
-			throw QException("È¥ÔëÉùÍ¼Æ¬¶ªÊ§!");
+			res = api->GetUTF8Text();
+
+			api->End();
+			pixDestroy(&image);
+			string s = "result";
+			this->notify(s);
 		}
-		api->SetImage(image);
-		// Get OCR result
-
-		res = api->GetUTF8Text();
-
-		api->End();
-		pixDestroy(&image);
-		string s = "result";
-		this->notify(s);
-	}
-	catch (QException& E) {
-		e = E;
-		this->notify(false);
+		catch (QException& E) {
+			e = E;
+			this->notify(false);
+		}
+	} else if (verifyType == VerifyType::SLIDER) {
+		try {
+			if (originPicturePath.empty() || slidePicturePath.empty()) {
+				throw QException("ÇëÏÈ´ò¿ªÍ¼Æ¬£¡");
+			}
+			PyObject *pModule, *pFunc, *pValue;
+			Py_Initialize();
+			pModule = PyImport_ImportModule("numpytest1");
+			pValue = PyObject_CallMethod(pModule, "predict", "ss", originPicturePath.c_str(), slidePicturePath.c_str());
+			//qDebug() << PyLong_AsLong(pValue);
+			ostringstream os;
+			os << PyLong_AsLong(pValue);
+			res = os.str();
+			Py_Finalize();
+			string s = "result";
+			this->notify(s);
+		}
+		catch (QException& E) {
+			e = E;
+			this->notify(false);
+		}
 	}
 }
 void Model::loadPicture(const string& path) {
+	originPicturePath = path;
 	m = cv::imread(path, 1);
 	if (m.empty()) {
 		e.setErrorMes("¼ÓÔØÍ¼Æ¬Ê§°Ü!");
@@ -218,6 +242,17 @@ void Model::loadPicture(const string& path) {
 	}
 	else {
 		string s = "image";
+		this->notify(s);
+	}
+}
+void Model::loadSlider(const string& path) {
+	sliderm = cv::imread(path, 1);
+	if (sliderm.empty()) {
+		e.setErrorMes("¼ÓÔØÍ¼Æ¬Ê§°Ü!");
+		this->notify(false);
+	} else {
+		slidePicturePath = path;
+		string s = "slideImage";
 		this->notify(s);
 	}
 }
@@ -242,10 +277,13 @@ void Model::saveResult(string savePath) {
 	}
 }
 void Model::deletePicture() {
-	remove("processedPicture/denoise.jpg");
+	remove("denoise.jpg");
 }
 cv::Mat& Model::getMat() {
 	return m;
+}
+cv::Mat& Model::getSliderMat() {
+	return sliderm;
 }
 cv::Mat& Model::getGrayMat() {
 	return graym;

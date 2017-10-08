@@ -20,6 +20,7 @@ View::View(QWidget *parent)
 	ui.aboutAction->setStatusTip(tr("About authors and versions"));
 
 	originScene = new QGraphicsScene();
+	sliderScene = new QGraphicsScene();
 	grayScene = new QGraphicsScene();
 	denoiseScene = new QGraphicsScene();
 	removeBGScene = new QGraphicsScene();
@@ -27,18 +28,21 @@ View::View(QWidget *parent)
 
 	errorMessage = new QString;
 	ui.weightAveButton->click();
-	ui.textCodeButton->click();
+	ui.textCodeRadioButton->click();
 
 	//禁止最大化窗口
 	setWindowFlags(windowFlags()& ~Qt::WindowMaximizeButtonHint);
 
 	ui.leftOriginView->setScene(originScene);
+	ui.sliderView->setScene(sliderScene);
 	ui.binaryzationView->setScene(binaryScene);
 	ui.denoiseView->setScene(denoiseScene);
 	ui.removeBgView->setScene(removeBGScene);
 	ui.grayView->setScene(grayScene);
 
 	connect(ui.importPicAction, &QAction::triggered, this, &View::importPicture);
+	connect(ui.importPictureButton, &QPushButton::clicked, this, &View::importPicture);
+	connect(ui.importSliderButton, &QPushButton::clicked, this, &View::importSlider);
 	connect(ui.saveAction, &QAction::triggered, this, &View::saveFile);
 	connect(ui.recognizeButton, &QPushButton::clicked, this, &View::solvePicture);
 	connect(ui.exitAction, &QAction::triggered, this, &View::close);
@@ -48,8 +52,8 @@ View::View(QWidget *parent)
 
 	void (QSpinBox:: *spinboxSingal)(int) = &QSpinBox::valueChanged;
 	connect(ui.rBGSlider, SIGNAL(valueChanged(int)), ui.rBGSpinBox, SLOT(setValue(int)));
-	connect(ui.rBGSlider,&QSlider::valueChanged, this, &View::processPicture);
-	connect(ui.rBGSpinBox, SIGNAL(valueChanged(int)), ui.rBGSlider, SLOT(setValue(int)));	
+	connect(ui.rBGSlider, &QSlider::valueChanged, this, &View::processPicture);
+	connect(ui.rBGSpinBox, SIGNAL(valueChanged(int)), ui.rBGSlider, SLOT(setValue(int)));
 	connect(ui.rBGSpinBox, spinboxSingal, this, &View::processPicture);
 	connect(ui.binarySlider, SIGNAL(valueChanged(int)), ui.binarySpinBox, SLOT(setValue(int)));
 	connect(ui.binarySlider, &QSlider::valueChanged, this, &View::processPicture);
@@ -87,7 +91,7 @@ void View::aboutText() {
 void View::donateText() {
 	donateWindow = new DonateWindow();
 	donateWindow->show();
-	
+
 }
 
 void View::closeEvent(QCloseEvent *event) {
@@ -100,14 +104,11 @@ void View::processPicture() {
 	}
 	if (ui.aveButton->isChecked()) {
 		grayType = GrayType::GRAY_AVERAGE;
-	}
-	else if (ui.maxbutton->isChecked()) {
+	} else if (ui.maxbutton->isChecked()) {
 		grayType = GrayType::GRAY_MAX;
-	}
-	else if (ui.weightAveButton->isChecked()) {
+	} else if (ui.weightAveButton->isChecked()) {
 		grayType = GrayType::GRAY_WEIGHTAVE;
-	}
-	else {
+	} else {
 		grayType = -1;
 	}
 	shared_ptr<ProcessParam> sp = make_shared<ProcessParam>();
@@ -129,15 +130,42 @@ void View::importPicture() {
 		processPicture();
 	}
 }
+void View::importSlider() {
+	if (ui.textCodeRadioButton->isChecked()) {
+		return;
+	}
+	filename = QFileDialog::getOpenFileName(this, "Select Picture", ".", tr("Images (*.png *.bmp *.jpg *.tif *.GIF )"));
+	if (!filename.isEmpty()) {
+		shared_ptr<StringParam> sp = make_shared<StringParam>();
+		sp->setPath(filename.toStdString());
+		loadSliderCommand->setParams(static_pointer_cast<Param, StringParam>(sp));
+		loadSliderCommand->exec();
+	}
+}
 void View::solvePicture() {
+	/*if (this->pImg->isNull()||this->pSliderImg->isNull()) {
+		return;
+	}*/
+	if (ui.textCodeRadioButton->isChecked()) {
+		verifyType = VerifyType::TEXT;
+	} else if (ui.SlideCodeRadioButton->isChecked()) {
+		verifyType = VerifyType::SLIDER;
+	} else {
+		verifyType = -1;
+	}
+	shared_ptr<SolveParam> sp = make_shared<SolveParam>();
+	sp->setVerifyType(verifyType);
+	solvePictureCommand->setParams(static_pointer_cast<Param, SolveParam>(sp));
 	solvePictureCommand->exec();
 }
 void View::update(const string& attribute) {
 	if (attribute == "image") {
 		originScene->clear();
 		originScene->addPixmap(QPixmap::fromImage(pImg->scaled(ui.leftOriginView->width(), ui.leftOriginView->height(), Qt::KeepAspectRatio)));
-	}
-	else if (attribute == "process") {
+	} else if (attribute == "slideImage") {
+		sliderScene->clear();
+		sliderScene->addPixmap(QPixmap::fromImage(pSliderImg->scaled(ui.sliderView->width(), ui.sliderView->height(), Qt::KeepAspectRatio)));
+	} else if (attribute == "process") {
 		grayScene->clear();
 		grayScene->addPixmap(QPixmap::fromImage(pGrayImg->scaled(ui.grayView->width(), ui.grayView->height(), Qt::KeepAspectRatio)));
 		denoiseScene->clear();
@@ -146,8 +174,7 @@ void View::update(const string& attribute) {
 		removeBGScene->addPixmap(QPixmap::fromImage(pRemoveBGImg->scaled(ui.removeBgView->width(), ui.removeBgView->height(), Qt::KeepAspectRatio)));
 		binaryScene->clear();
 		binaryScene->addPixmap(QPixmap::fromImage(pBinaryImg->scaled(ui.binaryzationView->width(), ui.binaryzationView->height(), Qt::KeepAspectRatio)));
-	}
-	else if (attribute == "result") {
+	} else if (attribute == "result") {
 		ui.resultText->setText(*res);
 	}
 }

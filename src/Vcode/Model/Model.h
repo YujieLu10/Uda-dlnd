@@ -18,10 +18,15 @@ using namespace std;
 class Model :public Observable {
 protected:
 	cv::Mat m;
+	cv::Mat sliderm;
 	cv::Mat graym;
 	cv::Mat denoisem;
 	cv::Mat removeBGm;
 	cv::Mat binarym;
+
+	string originPicturePath;
+	string slidePicturePath;
+
 	string res;
 	QException e;
 public:
@@ -29,6 +34,8 @@ public:
 	~Model() {}
 
 	cv::Mat& getMat();
+
+	cv::Mat& getSliderMat();
 
 	cv::Mat& getGrayMat();
 
@@ -46,9 +53,11 @@ public:
 
 	void loadPicture(const string& path);
 
+	void loadSlider(const string& path);
+
 	void processPicture(int grayType, int removet, int binaryt, int denoiser);
 
-	void solvePicture();
+	void solvePicture(int verifyType);
 
 	void saveResult(string savePath);
 

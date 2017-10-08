@@ -100,6 +100,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_GuideView.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ViewModel\Commands\LoadSliderCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Vcode.qrc">
@@ -163,11 +166,16 @@
     <CustomBuild Include="GeneratedFiles\ui_GuideView.h">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_MainView.h">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VClogo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_MainView.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewModel\Commands\LoadSliderCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
